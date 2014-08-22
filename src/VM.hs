@@ -224,7 +224,7 @@ defaultNamespace = M.fromList [
             do
                 res <- foldr joinFuncs finish (replicate (floor times) $ f [] state)
                 case res of
-                    Left (ArgumentError _ mes) -> returnL $ ArgumentError 1 ("illegal function: " ++ mes)
+                    Left (ArgumentError _ mes) -> returnL $ ArgumentError 1 mes
                     Right _                    -> finish
             where
                 joinFuncs :: IO (Either ArgumentError ()) -> IO (Either ArgumentError ()) -> IO (Either ArgumentError ())
