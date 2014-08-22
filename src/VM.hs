@@ -235,8 +235,8 @@ defaultNamespace = M.fromList [
                             Right _      -> g
 
         _echo = FuncValue __echo
-        __echo args _ = checkTypes [AnyType] args $ \[value] ->
-            (putStrLn $ show value) >> finish
+        __echo args _ = checkTypes [StrType] args $ \[StrValue mes] ->
+            putStrLn mes >> finish
 
 defaultMetaNamespace :: M.Map String Value
 defaultMetaNamespace = M.fromList [
