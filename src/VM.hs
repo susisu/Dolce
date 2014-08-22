@@ -6,7 +6,9 @@ module VM (
     joinOperations,
     makeOperation,
     operationToFuncLiteral,
-    doOperation
+    doOperation,
+    finish,
+    checkTypes
 ) where
 
 import Control.Applicative
