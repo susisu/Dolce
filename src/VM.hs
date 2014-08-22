@@ -46,14 +46,11 @@ runOperation NullOperation _     = finish
 joinOperations :: Operation -> Operation -> Operation
 joinOperations NullOperation op            = op
 joinOperations op NullOperation            = op
-joinOperations (Operation f) (Operation g) = Operation $ \state -> (>>) <$> f state <*> g state
-{-
 joinOperations (Operation f) (Operation g) = Operation $ \state -> do
         res <- f state
         case res of
             err@(Left _) -> return err
             Right _      -> g state
--}
 
 operationToFuncLiteral :: Operation -> Literal
 operationToFuncLiteral op = case op of
@@ -81,7 +78,6 @@ doOperation ftoken argTokens state = do
             Right (FuncValue f)     -> do
                     -- debug
                     -- putStrLn $ show ftoken ++ "(" ++ (concat $ intersperse ", " $ map show argTokens) ++ ")"
-                    --
                     isInHeader <- getIsInHeader state
                     case ftoken of
                         (Token _ idl@(MetaIdLiteral _))
@@ -93,7 +89,24 @@ doOperation ftoken argTokens state = do
 
         where
             getArgs :: Platform p => [Token] -> VMState p -> IO (Either OperationError [Value])
-            getArgs tokens state = sequence <$> mapM (flip getValue $ state) tokens
+            getArgs tokens state = sequence' $ map (flip getValue $ state) tokens
+                where
+                    sequence' :: [IO (Either OperationError Value)] -> IO (Either OperationError [Value])
+                    sequence' []       = returnR []
+                    sequence' (x : []) = do
+                        res <- x
+                        case res of
+                            Left err  -> returnL err
+                            Right val -> returnR [val] 
+                    sequence' (x : xs) = do
+                        r <- x
+                        case r of
+                            Left err -> returnL err
+                            Right v  -> do
+                                rs <- sequence' xs
+                                case rs of
+                                    Left err -> returnL err
+                                    Right vs -> returnR $ v : vs
 
             runFunc :: Platform p => [Token] -> VMState p -> (Platform p => [Value] -> VMState p -> IO (Either ArgumentError ())) -> IO (Either OperationError ())
             runFunc argTokens state f = do
@@ -209,10 +222,17 @@ defaultNamespace = M.fromList [
         _repeat = FuncValue __repeat
         __repeat args state = checkTypes [NumType, FuncType] args $ \[NumValue times, FuncValue f] ->
             do
-                res <- foldr (\a b -> (>>) <$> a <*> b) finish (replicate (floor times) $ f [] state)
+                res <- foldr joinFuncs finish (replicate (floor times) $ f [] state)
                 case res of
                     Left (ArgumentError _ mes) -> returnL $ ArgumentError 1 ("illegal function: " ++ mes)
                     Right _                    -> finish
+            where
+                joinFuncs :: IO (Either ArgumentError ()) -> IO (Either ArgumentError ()) -> IO (Either ArgumentError ())
+                joinFuncs f g = do
+                        res <- f
+                        case res of
+                            err@(Left _) -> return err
+                            Right _      -> g
 
         _echo = FuncValue __echo
         __echo args _ = checkTypes [AnyType] args $ \[value] ->
