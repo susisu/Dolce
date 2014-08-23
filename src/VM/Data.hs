@@ -104,8 +104,8 @@ newVMState :: Platform p => p -> IO (VMState p)
 newVMState platform = do
         fps           <- newIORef 60.0
         correction    <- newIORef 0.0
-        interval      <- newIORef 0.0
-        unitLength    <- newIORef 0.0
+        interval      <- newIORef 1.0
+        unitLength    <- newIORef 1.0
         currentTime   <- newIORef 0.0
         isInHeader    <- newIORef True
         userNamespace <- H.new

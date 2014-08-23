@@ -28,8 +28,9 @@ newDebugPlatform = do
         namespace = M.fromList [
                 ("log", _log)
             ]
-        _log = FuncValue __log
-        __log args state = checkTypes [AnyType] args $ \[value] ->
-            modifyIORef logRef (++ (show value ++ "\n")) >> finish
+            where
+                _log = FuncValue __log
+                __log args state = checkTypes [AnyType] args $ \[value] ->
+                    modifyIORef logRef (++ (show value ++ "\n")) >> finish
     return $ DebugPlatform logRef namespace
 

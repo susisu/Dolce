@@ -11,7 +11,6 @@ module VM (
     checkTypes
 ) where
 
-import Control.Applicative
 import Control.Monad
 import qualified Data.Map as M
 import Data.Monoid
