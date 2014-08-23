@@ -7,7 +7,10 @@ module VM (
     makeOperation,
     operationToFuncLiteral,
     doOperation,
+    returnL,
+    returnR,
     finish,
+    validateTypes,
     checkTypes
 ) where
 

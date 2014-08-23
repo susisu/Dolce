@@ -10,7 +10,7 @@ import qualified System.IO.UTF8 as UTF8
 import Parser
 import VM
 import VM.Data
-import VM.Platform.Debug
+import VM.Platform.DOS
 
 
 main :: IO ()
@@ -28,7 +28,7 @@ compile ipath opath = handle handler $ do
         case parse (FilePath.takeFileName ipath) source of
             Left err -> putStrLn $ "Error: " ++ show err
             Right op -> do
-                    platform <- newDebugPlatform
+                    platform <- newDOSPlatform
                     state    <- newVMState platform
                     res      <- runOperation op state
                     case res of
