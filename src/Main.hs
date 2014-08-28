@@ -55,7 +55,7 @@ compile_ ipath = compile ipath opath
 showVersionInfo :: IO ()
 showVersionInfo = do
         putStrLn "Dolce - the DOL CompilEr"
-        putStrLn "Version 0.2.0"
+        putStrLn "Version 0.2.1"
         putStrLn "Copyright(C) 2014 Susisu http://susisu.ktkr.net/"
 
 showHelp :: IO ()
