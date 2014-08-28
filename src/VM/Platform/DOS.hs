@@ -80,7 +80,7 @@ instance Platform DOSPlatform where
                         modifyIORef result (++ "&data" ++ show c ++ "_" ++ show n ++ "=" ++ queueStr)
                     else
                         modifyIORef result (++ "&" ++ name ++ "=" ++ queueStr)
-            names     <- readIORef (eventNames p)
+            names <- readIORef (eventNames p)
             forM_ names $ \name -> do
                     queue <- H.lookup (events p) name
                     case queue of
@@ -121,8 +121,7 @@ instance Eq Event where
     (Event a _) == (Event b _) = a == b
 
 instance Ord Event where
-    (Event a _) > (Event b _) = a > b
-    (Event a _) < (Event b _) = a < b
+    compare (Event a _) (Event b _) = compare a b
 
 data Header = Header String String
 

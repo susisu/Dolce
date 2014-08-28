@@ -39,8 +39,7 @@ compile ipath opath = handle handler $ do
                     res      <- runOperation op state
                     case res of
                         Left err -> putStrLn $ show err
-                        Right _  -> do
-                                UTF8.writeFile opath =<< output platform
+                        Right _  -> output platform >>= UTF8.writeFile opath
     where
         handler :: SomeException -> IO ()
         handler exception = putStrLn $ "Error: " ++ show exception
