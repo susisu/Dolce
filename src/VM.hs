@@ -29,8 +29,8 @@ import Token
 import VM.Data
 
 
-compilerVersion :: Double
-compilerVersion = 0.2
+languageVersion :: Double
+languageVersion = 0.2
 
 
 data Operation = Operation (forall p. Platform p => VMState p -> IO (Either OperationError ())) | NullOperation
@@ -282,10 +282,10 @@ defaultMetaNamespace = M.fromList [
 
         _version = FuncValue __version
         __version args _ = checkTypes [NumType] args $ \[NumValue v] ->
-                if v == compilerVersion then
+                if v == languageVersion then
                     finish
                 else
-                    returnL $ ArgumentError 0 ("couldn't match version " ++ show v ++ " with compiler version " ++ show compilerVersion)
+                    returnL $ ArgumentError 0 ("couldn't match version " ++ show v ++ " with compiler version " ++ show languageVersion)
 
 validateTypes :: [Type] -> [Value] -> Either ArgumentError [Value]
 validateTypes types values
