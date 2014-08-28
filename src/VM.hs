@@ -85,11 +85,11 @@ doOperation ftoken argTokens state = do
                     isInHeader <- getIsInHeader state
                     case ftoken of
                         (Token _ idl@(MetaIdLiteral _))
-                            | not isInHeader -> returnL $ OperationError (pos ftoken) ("invalid use of a header function " ++ show idl)
-                            | otherwise      -> runFunc argTokens state f
+                            | isInHeader -> runFunc argTokens state f
+                            | otherwise  -> returnL $ OperationError (pos ftoken) ("invalid use of header function " ++ show idl)
                         _
-                            | not isInHeader -> setIsInHeader state False >> runFunc argTokens state f
-                            | otherwise      -> runFunc argTokens state f
+                            | isInHeader -> setIsInHeader state False >> runFunc argTokens state f
+                            | otherwise  -> runFunc argTokens state f
 
         where
             getArgs :: Platform p => [Token] -> VMState p -> IO (Either OperationError [Value])
