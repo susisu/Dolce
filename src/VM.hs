@@ -11,7 +11,8 @@ module VM (
     returnR,
     finish,
     validateTypes,
-    checkTypes
+    checkTypes,
+    joinFuncs
 ) where
 
 import Control.Monad
@@ -232,13 +233,6 @@ defaultNamespace = M.fromList [
 
         _repeat = FuncValue __repeat
         __repeat args state = checkTypes [NumType, FuncType] args $ \[NumValue times, FuncValue f] ->
-            where
-                joinFuncs :: IO (Either ArgumentError ()) -> IO (Either ArgumentError ()) -> IO (Either ArgumentError ())
-                joinFuncs f g = do
-                        res <- f
-                        case res of
-                            err@(Left _) -> return err
-                            Right _      -> g
                 do
                     res <- foldr joinFuncs finish (replicate (floor times) $ f [] state)
                     case res of
@@ -303,4 +297,11 @@ checkTypes :: [Type] -> [Value] -> ([Value] -> IO (Either ArgumentError ())) -> 
 checkTypes types values f = case validateTypes types values of
         Left err   -> returnL err
         Right args -> f args
+
+joinFuncs :: IO (Either ArgumentError ()) -> IO (Either ArgumentError ()) -> IO (Either ArgumentError ())
+joinFuncs f g = do
+        res <- f
+        case res of
+            err@(Left _) -> return err
+            Right _      -> g
 
