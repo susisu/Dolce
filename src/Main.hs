@@ -35,7 +35,6 @@ compile ipath opath = handle handler $ do
                         Left err -> putStrLn $ show err
                         Right _  -> do
                                 UTF8.writeFile opath =<< output platform
-                                putStrLn ("wrote to " ++ opath)
     where
         handler :: SomeException -> IO ()
         handler exception = putStrLn $ "Error: " ++ show exception

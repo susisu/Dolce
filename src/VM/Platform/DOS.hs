@@ -148,9 +148,8 @@ newDOSPlatform = do
                 ]
                 where
                     _layout = FuncValue __layout
-                    __layout args state = do
+                    __layout args _ = do
                             cols      <- readIORef numCols
-                            noteTypes <- readIORef numNoteTypes
                             checkTypes (replicate cols NumType) args $ \cs ->
                                 do
                                     let
@@ -204,7 +203,7 @@ newDOSPlatform = do
             getNumFromValue :: Value -> Double
             getNumFromValue (NumValue num) = num
             getNumFromValue _              = 0.0
-            
+
             metaNamespace = M.fromList [
                     ("init"  , _init),
                     ("event" , _event),
@@ -232,6 +231,7 @@ newDOSPlatform = do
                                                         finish
                                                 Nothing    -> returnL $ ArgumentError (negate 1) ("unknown event: " ++ name)
                                     finish
+                        Right _                            -> finish
                         where
                             getTypeFromTypeValue :: Value -> Type
                             getTypeFromTypeValue (TypeValue t) = t
@@ -268,10 +268,10 @@ newDOSPlatform = do
                                 writeIOArrayRef noteNames (col, noteType) name
                                 finish
                     _header = FuncValue __header
-                    __header args state = checkTypes [StrType, StrType] args $ \[StrValue name, StrValue value] ->
+                    __header args _ = checkTypes [StrType, StrType] args $ \[StrValue name, StrValue value] ->
                         modifyIORef headerData (Header name value :) >> finish
                     _merge = FuncValue __merge
-                    __merge args state = checkTypes [StrType] args $ \[StrValue path] ->
+                    __merge args _ = checkTypes [StrType] args $ \[StrValue path] ->
                         modifyIORef mergeFiles (path :) >> finish
         return $ DOSPlatform {
                 currentTime   = currentTime,
