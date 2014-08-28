@@ -1,3 +1,9 @@
+{-
+    Dolce - Parser.hs
+    Copyright (c) 2014, Susisu
+    see: license.txt
+-}
+
 module Parser (
     parse
 ) where

@@ -1,3 +1,9 @@
+{-
+    Dolce - VM/Platform/Debug.hs
+    Copyright (c) 2014, Susisu
+    see: license.txt
+-}
+
 module VM.Platform.Debug (
     DebugPlatform,
     newDebugPlatform

@@ -1,3 +1,9 @@
+{-
+    Dolce - VM/Platform/DOS.hs
+    Copyright (c) 2014, Susisu
+    see: license.txt
+-}
+
 module VM.Platform.DOS (
     DOSPlatform,
     newDOSPlatform

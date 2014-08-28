@@ -1,3 +1,9 @@
+{-
+    Dolce - Main.hs
+    Copyright (c) 2014, Susisu
+    see: license.txt
+-}
+
 module Main (
     main
 ) where

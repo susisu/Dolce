@@ -1,3 +1,9 @@
+{-
+    Dolce - VM/Data.hs
+    Copyright (c) 2014, Susisu
+    see: license.txt
+-}
+
 {-# LANGUAGE RankNTypes #-}
 
 module VM.Data (
