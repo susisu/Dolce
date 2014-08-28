@@ -23,14 +23,14 @@ instance Platform DebugPlatform where
 
 newDebugPlatform :: IO DebugPlatform
 newDebugPlatform = do
-    logRef <- newIORef "-- time change log --\n"
-    let
-        namespace = M.fromList [
-                ("log", _log)
-            ]
-            where
-                _log = FuncValue __log
-                __log args state = checkTypes [AnyType] args $ \[value] ->
-                    modifyIORef logRef (++ (show value ++ "\n")) >> finish
-    return $ DebugPlatform logRef namespace
+        logRef <- newIORef "-- time change log --\n"
+        let
+            namespace = M.fromList [
+                    ("log", _log)
+                ]
+                where
+                    _log = FuncValue __log
+                    __log args state = checkTypes [AnyType] args $ \[value] ->
+                        modifyIORef logRef (++ (show value ++ "\n")) >> finish
+        return $ DebugPlatform logRef namespace
 

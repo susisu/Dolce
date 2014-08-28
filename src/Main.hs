@@ -43,9 +43,10 @@ compile ipath opath = handle handler $ do
 compile_ :: FilePath -> IO ()
 compile_ ipath = compile ipath opath
     where
-        opath = if FilePath.takeExtension ipath == ".dol"
-            then FilePath.replaceExtension ipath "dos"
-            else FilePath.addExtension ipath "dos"
+        opath = if FilePath.takeExtension ipath == ".dol" then
+                FilePath.replaceExtension ipath "dos"
+            else
+                FilePath.addExtension ipath "dos"
 
 showVersionInfo :: IO ()
 showVersionInfo = do

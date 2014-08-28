@@ -98,19 +98,19 @@ doOperation ftoken argTokens state = do
                     sequence' :: [IO (Either OperationError Value)] -> IO (Either OperationError [Value])
                     sequence' []       = returnR []
                     sequence' (x : []) = do
-                        res <- x
-                        case res of
-                            Left err  -> returnL err
-                            Right val -> returnR [val] 
+                            res <- x
+                            case res of
+                                Left err  -> returnL err
+                                Right val -> returnR [val] 
                     sequence' (x : xs) = do
-                        r <- x
-                        case r of
-                            Left err -> returnL err
-                            Right v  -> do
-                                rs <- sequence' xs
-                                case rs of
-                                    Left err -> returnL err
-                                    Right vs -> returnR $ v : vs
+                            r <- x
+                            case r of
+                                Left err -> returnL err
+                                Right v  -> do
+                                        rs <- sequence' xs
+                                        case rs of
+                                            Left err -> returnL err
+                                            Right vs -> returnR $ v : vs
 
             runFunc :: Platform p => [Token] -> VMState p -> (Platform p => [Value] -> VMState p -> IO (Either ArgumentError ())) -> IO (Either OperationError ())
             runFunc argTokens state f = do
@@ -173,63 +173,65 @@ defaultNamespace = M.fromList [
 
         _interval = FuncValue __interval
         __interval args state = checkTypes [NumType] args $ \[NumValue interval] ->
-            setInterval state interval >> finish
+                setInterval state interval >> finish
 
         _intervalFrames = FuncValue __intervalFrames
         __intervalFrames args state = checkTypes [NumType] args $ \[NumValue frames] ->
-            do
-                fps <- getFPS state
-                setInterval state (frames / fps) >> finish
+                do
+                    fps <- getFPS state
+                    setInterval state (frames / fps)
+                    finish
 
         _bps = FuncValue __bps
         __bps args state = checkTypes [NumType] args $ \[NumValue bps] ->
-            if bps > 0.0
-                then setInterval state (1.0 / bps) >> finish
-                else setInterval state 0.0 >> finish
+                if bps > 0.0 then
+                    setInterval state (1.0 / bps) >> finish
+                else
+                    setInterval state 0.0 >> finish
 
         _bpm = FuncValue __bpm
         __bpm args state = checkTypes [NumType] args $ \[NumValue bpm] ->
-            if bpm > 0.0
-                then setInterval state (60.0 / bpm) >> finish
-                else setInterval state 0.0 >> finish
+                if bpm > 0.0 then
+                    setInterval state (60.0 / bpm) >> finish
+                else
+                    setInterval state 0.0 >> finish
 
         _length = FuncValue __length
         __length args state = checkTypes [NumType] args $ \[NumValue rel] ->
-            if rel > 0.0
-                then setUnitLength state (4.0 / rel) >> finish
-                else setUnitLength state 0.0 >> finish
+                if rel > 0.0 then
+                    setUnitLength state (4.0 / rel) >> finish
+                else
+                    setUnitLength state 0.0 >> finish
 
         _time = FuncValue __time
         __time args state = checkTypes [NumType] args $ \[NumValue time] ->
-            setCurrentTime state time >> finish
+                setCurrentTime state time >> finish
 
         _frame = FuncValue __frame
         __frame args state = checkTypes [NumType] args $ \[NumValue frame] ->
-            do
-                fps <- getFPS state
-                setCurrentTime state (frame / fps) >> finish
+                do
+                    fps <- getFPS state
+                    setCurrentTime state (frame / fps)
+                    finish
 
         _feed = FuncValue __feed
         __feed args state = checkTypes [] args $ \[] ->
-            do
-                interval   <- getInterval state
-                unitLength <- getUnitLength state
-                modifyCurrentTime state (+ (interval * unitLength)) >> finish
+                do
+                    interval   <- getInterval state
+                    unitLength <- getUnitLength state
+                    modifyCurrentTime state (+ (interval * unitLength))
+                    finish
 
         _back = FuncValue __back
         __back args state = checkTypes [] args $ \[] ->
-            do
-                interval   <- getInterval state
-                unitLength <- getUnitLength state
-                modifyCurrentTime state (\x -> x - (interval * unitLength)) >> finish
+                do
+                    interval   <- getInterval state
+                    unitLength <- getUnitLength state
+                    modifyCurrentTime state (\x -> x - (interval * unitLength))
+                    finish
 
         _repeat = FuncValue __repeat
         __repeat args state = checkTypes [NumType, FuncType] args $ \[NumValue times, FuncValue f] ->
-            do
-                res <- foldr joinFuncs finish (replicate (floor times) $ f [] state)
-                case res of
-                    Left (ArgumentError _ mes) -> returnL $ ArgumentError 1 mes
-                    Right _                    -> finish
             where
                 joinFuncs :: IO (Either ArgumentError ()) -> IO (Either ArgumentError ()) -> IO (Either ArgumentError ())
                 joinFuncs f g = do
@@ -237,10 +239,15 @@ defaultNamespace = M.fromList [
                         case res of
                             err@(Left _) -> return err
                             Right _      -> g
+                do
+                    res <- foldr joinFuncs finish (replicate (floor times) $ f [] state)
+                    case res of
+                        Left (ArgumentError _ mes) -> returnL $ ArgumentError 1 mes
+                        Right _                    -> finish
 
         _echo = FuncValue __echo
         __echo args _ = checkTypes [StrType] args $ \[StrValue mes] ->
-            putStrLn mes >> finish
+                putStrLn mes >> finish
 
 defaultMetaNamespace :: M.Map String Value
 defaultMetaNamespace = M.fromList [
@@ -253,29 +260,32 @@ defaultMetaNamespace = M.fromList [
     where
         _define = FuncValue __define
         __define args state = checkTypes [StrType, AnyType] args $ \[StrValue name, value] ->
-            defineValue state name value >> finish
+                defineValue state name value >> finish
 
         _fps = FuncValue __fps
         __fps args state = checkTypes [NumType] args $ \[NumValue fps] ->
-            if fps > 0.0
-                then setFPS state fps >> finish
-                else returnL $ ArgumentError 0 "fps must be a positive number"
+                if fps > 0.0 then
+                    setFPS state fps >> finish
+                else
+                    returnL $ ArgumentError 0 "fps must be a positive number"
 
         _correction = FuncValue __correction
         __correction args state = checkTypes [NumType] args $ \[NumValue correction] ->
-            setCorrection state correction >> finish
+                setCorrection state correction >> finish
 
         _correctionFrames = FuncValue __correctionFrames
         __correctionFrames args state = checkTypes [NumType] args $ \[NumValue frames] ->
-            do
-                fps <- getFPS state
-                setCorrection state (frames / fps) >> finish
+                do
+                    fps <- getFPS state
+                    setCorrection state (frames / fps)
+                    finish
 
         _version = FuncValue __version
         __version args _ = checkTypes [NumType] args $ \[NumValue v] ->
-            if v == compilerVersion
-                then finish
-                else returnL $ ArgumentError 0 ("couldn't match version " ++ show v ++ " with compiler version " ++ show compilerVersion)
+                if v == compilerVersion then
+                    finish
+                else
+                    returnL $ ArgumentError 0 ("couldn't match version " ++ show v ++ " with compiler version " ++ show compilerVersion)
 
 validateTypes :: [Type] -> [Value] -> Either ArgumentError [Value]
 validateTypes types values

@@ -162,10 +162,10 @@ setIsInHeader state = writeIORef (isInHeader state)
 
 lookupNamespace :: Platform p => VMState p -> String -> IO (Maybe Value)
 lookupNamespace state name = do
-    value <- H.lookup (userNamespace state) name
-    case value of
-        Just _  -> return value
-        Nothing -> lookupPlatformNamespace (platform state) name
+        value <- H.lookup (userNamespace state) name
+        case value of
+            Just _  -> return value
+            Nothing -> lookupPlatformNamespace (platform state) name
 
 defineValue :: VMState p -> String -> Value -> IO ()
 defineValue state name value = H.insert (userNamespace state) name value
