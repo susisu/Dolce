@@ -201,10 +201,11 @@ newDOSPlatform = do
                                         fps   <- getFPS state
                                         time  <- readIORef currentTime
                                         writeIOArrayRef noteEvents (col, noteType) $ NoteEvent (round $ time * fps) : queue
-                                        interval   <- getInterval state
-                                        unitLength <- getUnitLength state
-                                        modifyCurrentTime state (+ (interval * unitLength))
                                         finish
+                            interval   <- getInterval state
+                            unitLength <- getUnitLength state
+                            modifyCurrentTime state (+ (interval * unitLength))
+                            finish
             getNumFromValue :: Value -> Double
             getNumFromValue (NumValue num) = num
             getNumFromValue _              = 0.0

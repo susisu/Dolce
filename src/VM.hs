@@ -167,8 +167,8 @@ defaultNamespace = M.fromList [
         ("time"     , _time),
         ("frame"    , _frame),
         ("frm"      , _frame),
-        ("feed"     , _feed),
-        ("\\"       , _feed),
+        ("go"       , _go),
+        ("\\"       , _go),
         ("back"     , _back),
         ("^"        , _back),
         ("repeat"   , _repeat),
@@ -221,8 +221,8 @@ defaultNamespace = M.fromList [
                     setCurrentTime state (frame / fps)
                     finish
 
-        _feed = FuncValue __feed
-        __feed args state = checkTypes [] args $ \[] ->
+        _go = FuncValue __go
+        __go args state = checkTypes [] args $ \[] ->
                 do
                     interval   <- getInterval state
                     unitLength <- getUnitLength state
